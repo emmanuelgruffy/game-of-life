@@ -1,0 +1,29 @@
+
+
+.board-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(127, 7px);
+    grid-template-rows: repeat(127, 7px);
+    width: (127*7)px;
+    height: (127*7)px;
+    border: 2px solid black;
+  }
+  
+  .square {
+    width: 7px;
+    height: 7px;
+  }
+  
+  .B {
+    background-color: black;
+  }
+  
+  .W {
+    background-color: white;
+  }
