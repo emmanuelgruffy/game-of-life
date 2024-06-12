@@ -197,8 +197,8 @@ const Board = ({ initialSquares = [] }) => {
                   cursor: "pointer",
                 }}
                 onClick={() => {
-                  setStartCycle((prev) => !prev);
                   clearTimeout(doVariation);
+                  setStartCycle((prev) => !prev);
                 }}
               >
                 {startCycle ? <PauseIcon /> : <PlayArrowIcon />}
@@ -212,13 +212,13 @@ const Board = ({ initialSquares = [] }) => {
               >
                 <StopIcon
                   onClick={() => {
+                    clearTimeout(doVariation);
                     setStartCycle(false);
                     setVariation([]);
                     setSquares({
                       squares: initialSquares,
                       step: 0,
                     });
-                    clearTimeout(doVariation);
                   }}
                 />
               </button>
