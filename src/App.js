@@ -16,8 +16,8 @@ function App() {
         const squareIndex = `${[row, col]}`;
 
         const whiteStartingIndex = `${[
-          Math.ceil(NUM_SQUARES / 2),
-          Math.ceil(NUM_SQUARES / 2),
+          Math.floor(NUM_SQUARES / 2),
+          Math.floor(NUM_SQUARES / 2),
         ]}`;
 
         initialSquares[row][col] = (

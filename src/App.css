@@ -19,6 +19,7 @@
 }
 
 .start-button {
+  width: 144px;
   background-color: #61dafb;
   border: none;
   color: white;
