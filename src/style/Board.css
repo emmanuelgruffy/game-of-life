@@ -1,30 +1,65 @@
+/* Container for the board */
 .board-container {
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 10px; /* Add padding for better spacing on different screens */
 }
 
+/* Disabled state styling */
 .disabled {
   pointer-events: none;
   background-color: darkgrey;
 }
 
+/* Board grid setup */
 .board {
   display: grid;
   grid-template-columns: repeat(127, 5px);
   grid-template-rows: repeat(127, 5px);
-  width: (127 * 5) px;
-  height: (127 * 5) px;
+  width: 635px; /* Correct calculation for the board width (127 * 5px) */
+  height: 635px; /* Correct calculation for the board height (127 * 5px) */
   border: 2px solid black;
 }
 
-
+/* Black squares */
 .B {
-  /* background-color: black; */
+  background-color: black; /* Re-enabled the background-color for black squares */
   transition: background-color 200ms ease-out;
 }
 
+/* White squares */
 .W {
-  /* background-color: white; */
+  background-color: white; /* Re-enabled the background-color for white squares */
   transition: background-color 200ms ease-out;
+}
+
+/* Tablet-specific adjustments */
+@media screen and (min-width: 600px) and (max-width: 900px) {
+  .board {
+    grid-template-columns: repeat(127, 4px);
+    grid-template-rows: repeat(127, 4px);
+    width: 508px; /* Adjusted board width for tablets */
+    height: 508px; /* Adjusted board height for tablets */
+  }
+}
+
+/* Small screens (e.g., phones) */
+@media screen and (max-width: 600px) {
+  .board {
+    grid-template-columns: repeat(127, 3px);
+    grid-template-rows: repeat(127, 3px);
+    width: 381px; /* Adjusted board width for small screens */
+    height: 381px; /* Adjusted board height for small screens */
+  }
+}
+
+/* Larger screens or landscape mode adjustments */
+@media screen and (min-width: 900px) or (orientation: landscape) {
+  .board {
+    grid-template-columns: repeat(127, 6px);
+    grid-template-rows: repeat(127, 6px);
+    width: 762px; /* Adjusted board width for larger screens or landscape */
+    height: 762px; /* Adjusted board height for larger screens or landscape */
+  }
 }

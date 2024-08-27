@@ -1,3 +1,4 @@
+/* Base styles */
 .App {
   text-align: center;
   display: flex;
@@ -5,10 +6,12 @@
   align-items: center;
   height: 100vh;
   margin: 0;
+  flex-direction: column; /* Ensure content stacks vertically on smaller screens */
+  padding: 10px; /* Add padding to prevent content from touching screen edges */
 }
 
 .App-logo {
-  height: 40vmin;
+  height: 30vmin; /* Adjusted to better fit tablet screens */
   pointer-events: none;
 }
 
@@ -28,7 +31,7 @@
   text-decoration: none;
   display: inline-block;
   font-size: 16px;
-  margin: 4px 2px;
+  margin: 8px 0; /* Increased margin for better spacing on tablets */
   cursor: pointer;
 }
 
@@ -41,17 +44,51 @@
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
+  padding: 20px; /* Added padding for better spacing */
 }
 
 .App-link {
   color: #61dafb;
 }
 
+/* Keyframe animation */
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
   }
   to {
     transform: rotate(360deg);
+  }
+}
+
+/* Tablet-specific adjustments */
+@media screen and (min-width: 600px) and (max-width: 900px) {
+  .App-logo {
+    height: 25vmin; /* Further reduce logo size on smaller tablets */
+  }
+
+  .start-button {
+    width: 160px; /* Slightly increase button size for easier tap targets */
+    font-size: 18px; /* Increase font size for readability */
+  }
+
+  .App-header {
+    font-size: calc(12px + 2vmin); /* Increase overall font size */
+  }
+}
+
+/* Landscape orientation adjustments */
+@media screen and (orientation: landscape) {
+  .App {
+    flex-direction: row; /* Arrange elements side by side in landscape mode */
+    padding: 20px;
+  }
+
+  .App-logo {
+    height: 20vmin; /* Adjust logo size for landscape */
+  }
+
+  .start-button {
+    margin: 8px 20px; /* Adjust margin for better alignment */
   }
 }
