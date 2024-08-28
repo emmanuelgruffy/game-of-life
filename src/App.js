@@ -2,7 +2,6 @@ import React from 'react';
 import "./App.css";
 import Board from "./Board";
 
-export const NUM_SQUARES = 127;
 
 class ReadlineParser {
   constructor(delimiter = '\n') {
@@ -35,47 +34,54 @@ class ReadlineParser {
   }
 }
 
-async function connectToSerial() {
-  try {
-    // Request a port and open it
-    const port = await navigator.serial.requestPort();
-    await port.open({ baudRate: 9600 });
+const secretKey = process.env.OPENAI_API_KEY;
 
-    const reader = port.readable.getReader();
-    const readlineParser = new ReadlineParser('\n'); // Using newline as the delimiter
-
-    let i = 0;
-    while (i < 2000) {
-      const { value, done } = await reader.read();
-      if (done) {
-        reader.releaseLock();
-        break;
-      }
-
-      if (value) {
-        const text = new TextDecoder().decode(value);
-        const lines = readlineParser.parse(text);
-
-        // Process each line separately
-        lines.forEach(line => {
-          console.log(line); // Handle each complete line
-        });
-      }
-
-      i++;
-    }
-
-    // If there's any remaining data in the buffer, process it
-    const remaining = readlineParser.flush();
-    if (remaining) {
-      console.log(remaining);
-    }
-  } catch (error) {
-    console.error('Failed to connect to the serial port', error);
-  }
-}
+export const NUM_SQUARES = 127;
 
 function App() {
+
+console.log({secretKey});
+
+  async function connectToSerial() {
+    try {
+      // Request a port and open it
+      const port = await navigator.serial.requestPort();
+      await port.open({ baudRate: 115200 });
+  
+      const reader = port.readable.getReader();
+      const readlineParser = new ReadlineParser('\n'); // Using newline as the delimiter
+  
+    
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) {
+          reader.releaseLock();
+          break;
+        }
+  
+        if (value) {
+          const text = new TextDecoder().decode(value);
+          const lines = readlineParser.parse(text);
+  
+          // Process each line separately
+          lines.forEach(line => {
+            console.log(line); // Handle each complete line
+  
+          });
+        }
+  
+        
+      }
+  
+      // If there's any remaining data in the buffer, process it
+      const remaining = readlineParser.flush();
+      if (remaining) {
+        console.log(remaining);
+      }
+    } catch (error) {
+      console.error('Failed to connect to the serial port', error);
+    }
+  }
 
   const createInitialSquares = () => {
     let initialSquares = new Array(127);

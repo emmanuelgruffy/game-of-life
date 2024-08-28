@@ -11,6 +11,8 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "js-combinatorics": "^2.1.2",
+    "node": "^22.7.0",
+    "openai": "^4.56.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-scripts": "5.0.1",
