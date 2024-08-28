@@ -34,12 +34,12 @@ class ReadlineParser {
   }
 }
 
-const secretKey = process.env.OPENAI_API_KEY;
+
 
 export const NUM_SQUARES = 127;
 
 function App() {
-
+const secretKey = process.env.OPENAI_API_KEY;
 console.log({secretKey});
 
   async function connectToSerial() {
