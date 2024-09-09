@@ -11,7 +11,7 @@ const NUM_STEPS = 10;
 
 const Board = ({ initialSquares = [], setUserPressedStart, setPattern }) => {
   const openAIClient = new OpenAI({
-    apiKey: `${OPENAI_API_KEY}`,
+    apiKey: `${process.env.REACT_APP_OPENAI_API_KEY}`,
     dangerouslyAllowBrowser: true,
   });
 
