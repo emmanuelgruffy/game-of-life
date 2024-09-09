@@ -35,8 +35,6 @@ const Board = ({ initialSquares = [], setUserPressedStart, setPattern }) => {
         uploadImageToImgur(pngBlob)
           .then((imageUrl) => {
             console.log("Image uploaded to Imgur:", imageUrl);
-
-            setPattern([]);
           })
           .catch((error) => {
             console.error("Failed to upload image:", error);
