@@ -1,5 +1,6 @@
 /* Base styles */
 .App {
+  background-color: black;
   text-align: center;
   display: flex;
   justify-content: center;
@@ -91,4 +92,39 @@
   .start-button {
     margin: 8px 20px; /* Adjust margin for better alignment */
   }
+}
+
+
+h1, h2,  h3, h4, h5, h6 {
+  font-family: "Varela Round", sans-serif;
+  color: whitesmoke;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.intro-start {
+  font-size: x-large;
+  font-family: "Varela Round", sans-serif;
+  color: whitesmoke;
+  font-weight: 400;
+  font-style: normal;
+  background: transparent;
+  border: none;
+
+}
+
+button:focus {
+  outline: none;
+}
+
+.onboarding-div {
+  margin-left: auto;
+  margin-right: 8rem;
+  margin-top: auto;
+  margin-bottom: 8rem;
+}
+
+.onboarding-intro {
+  margin-left: 0;
+  margin-right: 0;
 }

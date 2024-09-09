@@ -1,36 +1,84 @@
 import React from "react";
+import OpenAI from "openai";
 import "./style/Board.css";
 
-// components
-import FormControl from "@mui/material/FormControl";
-import { InputLabel } from "@mui/material";
-import Box from "@mui/material/Box";
-import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
-import * as $C from "js-combinatorics";
-import PauseIcon from "@mui/icons-material/Pause";
-import StopIcon from "@mui/icons-material/Stop";
-import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-
 // constants
-import { NUM_SQUARES } from "./App";
+import { NUM_SQUARES, PatternContext } from "./App";
+import { openAIPrompt } from "./prompt";
+import { convertSvgToPng, uploadImageToImgur } from "./helpers";
 
-const possibleVariations = [];
+const NUM_STEPS = 10;
 
-let variations = new $C.BaseN("WB", 6);
-for (const elem of variations) {
-  possibleVariations.push(elem);
-}
+const Board = ({ initialSquares = [], setUserPressedStart, setPattern }) => {
+  const openAIClient = new OpenAI({
+    apiKey: `${OPENAI_API_KEY}`,
+    dangerouslyAllowBrowser: true,
+  });
 
-const NUM_STEPS = 62;
-
-const Board = ({ initialSquares = [] }) => {
-  const [variation, setVariation] = React.useState([]);
-  const [startCycle, setStartCycle] = React.useState(false);
   const [{ squares, step }, setSquares] = React.useState({
     squares: initialSquares,
     step: 0,
   });
+
+  const patternFromContext = React.useContext(PatternContext);
+  const [generatingResponse, setGeneratingResponse] = React.useState(false);
+  const [response, setResponse] = React.useState(null);
+
+  //inspect the following svg picture: ${svgElement}. ${openAIPrompt}
+
+  const handleConvertToImg = () => {
+    return (svgElement) => {
+      convertSvgToPng(svgElement).then((pngBlob) => {
+        const formData = new FormData();
+        formData.append("image", pngBlob);
+
+        uploadImageToImgur(pngBlob)
+          .then((imageUrl) => {
+            console.log("Image uploaded to Imgur:", imageUrl);
+
+            setPattern([]);
+          })
+          .catch((error) => {
+            console.error("Failed to upload image:", error);
+          });
+      });
+    };
+  };
+
+  const handleOpenAIResponse = () => {
+    return async (serializedSvg) => {
+      console.log(serializedSvg);
+
+      setGeneratingResponse(true);
+      try {
+        const chatCompletion = await openAIClient.chat.completions.create({
+          messages: [{ role: "user", content: "Say this is a test" }],
+          model: "text-embedding-3-small",
+        });
+        console.log({ chatCompletion });
+      } catch (error) {
+        console.error("Failed to generate response", error);
+      } finally {
+        setGeneratingResponse(false);
+        setResponse(
+          response?.data?.choices[0]?.text || "No response generated"
+        );
+      }
+    };
+  };
+
+  const translatePatternToVariation = (pattern) => {
+    // console.log({ pattern });
+    const latestSixSignals = pattern.slice(0, 6);
+    const variationToApply = latestSixSignals.map((_, index) => {
+      if (pattern[index] > pattern[index + 1]) {
+        return "W";
+      } else {
+        return "B";
+      }
+    });
+    return variationToApply;
+  };
 
   const calcNumberOfWhites = React.useCallback(
     (x, y) => {
@@ -131,116 +179,53 @@ const Board = ({ initialSquares = [] }) => {
 
   const doVariation = React.useRef();
 
-  React.useEffect(() => {
-    if (startCycle && step < NUM_STEPS) {
+  const askGPT = handleOpenAIResponse();
+  const convertToImg = handleConvertToImg();
+
+  const asyncEffect = async () => {
+    if (step < NUM_STEPS) {
+      const variation = translatePatternToVariation(patternFromContext);
+
       doVariation.current = setTimeout(() => {
         createNextVariationSquares(variation);
-      }, 150);
+      }, 1000 * (1 / patternFromContext[0]));
     }
-    if (step === NUM_STEPS) {
-      setStartCycle(false);
+    if (step === NUM_STEPS && doVariation.current) {
+      const svgElement = document.querySelector("svg") || null;
+      convertToImg(svgElement);
+      setSquares((prev) => ({ ...prev, step: NUM_STEPS + 1 }));
       clearTimeout(doVariation.current);
+
+      //await askGPT(serializedSvg);
     }
-  }, [startCycle, step, createNextVariationSquares, variation]);
+  };
+
+  React.useEffect(() => {
+    asyncEffect();
+    return () => {
+      if (step > NUM_STEPS && doVariation.current) {
+        clearTimeout(doVariation.current); // Clean up the timeout
+      }
+    };
+  }, [patternFromContext]);
 
   return (
     <div
       style={{
         display: "flex",
+        flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
       }}
     >
-      <div style={{ marginRight: "10%" }}>
-        <Box sx={{ minWidth: 120 }} marginBottom={"10px"}>
-          <FormControl fullWidth>
-            <InputLabel id="variation-label">Variation</InputLabel>
-            <Select
-              labelId="variation-label"
-              id="variation-select"
-              value={variation?.length ? variation : ""}
-              label="Variation"
-              disabled={startCycle}
-              onChange={(e) => setVariation(e.target.value)}
-            >
-              {possibleVariations.map((variation) => (
-                <MenuItem key={`${variation}`} value={variation}>
-                  {variation.join(" ")}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Box>
-        <button
-          className={`start-button ${
-            !variation?.length || startCycle ? "disabled" : ""
-          }`}
-          onClick={() => {
-            if (step >= NUM_STEPS - 1) {
-              setSquares({
-                squares: initialSquares,
-                step: 0,
-              });
-            }
-
-            setStartCycle(true);
-          }}
-          disabled={!variation?.length || startCycle}
-        >
-          {step >= NUM_STEPS - 1 ? "Re-start" : "Start"}
-        </button>
+      <div className="board">
+        <svg width={127 * 5} height={127 * 5}>
+          {squares}
+        </svg>
       </div>
       <div>
-        <div className="board">
-          <svg width={127 * 5} height={127 * 5}>
-            {squares}
-          </svg>
-        </div>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "flex-start",
-          }}
-        >
-          {step > 0 && step < NUM_STEPS ? (
-            <>
-              <button
-                style={{
-                  backgroundColor: "transparent",
-                  border: "none",
-                  cursor: "pointer",
-                }}
-                onClick={() => {
-                  clearTimeout(doVariation.current);
-                  setStartCycle((prev) => !prev);
-                }}
-              >
-                {startCycle ? <PauseIcon /> : <PlayArrowIcon />}
-              </button>
-              <button
-                style={{
-                  backgroundColor: "transparent",
-                  border: "none",
-                  cursor: "pointer",
-                }}
-              >
-                <StopIcon
-                  onClick={() => {
-                    clearTimeout(doVariation.current);
-                    setStartCycle(false);
-                    setVariation([]);
-                    setSquares({
-                      squares: initialSquares,
-                      step: 0,
-                    });
-                  }}
-                />
-              </button>
-            </>
-          ) : (
-            <div style={{ height: "29.5px" }} />
-          )}
-        </div>
+        {generatingResponse && <p>Generating response...</p>}
+        {response && !generatingResponse && <p>{response}</p>}
       </div>
     </div>
   );
