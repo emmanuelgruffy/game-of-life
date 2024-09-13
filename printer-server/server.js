@@ -7,9 +7,11 @@ const fs = require("fs");
 const path = require("path");
 const cors = require("cors");
 const multer = require("multer");
+const os = require("os"); // To detect the operating system
+const { exec } = require("child_process");
+
 const app = express();
 const port = 4000;
-const { exec } = require("child_process");
 
 // Configure multer to save uploaded PDFs in a temporary directory
 const upload = multer({ dest: "uploads/" });
