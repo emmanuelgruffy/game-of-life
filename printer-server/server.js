@@ -19,6 +19,18 @@ app.use(cors());
 
 app.use(bodyParser.json());
 
+function getPrintCommand(filePath) {
+  const printerName = "Your_Printer_Name"; // Change this to your actual printer name
+
+  if (os.platform() === "win32") {
+    // Windows OS
+    return `start /min acrord32.exe /t "${filePath}" "${printerName}"`;
+  } else {
+    // Linux/macOS
+    return `lp ${filePath}`;
+  }
+}
+
 // Endpoint to handle print requests
 // Endpoint to handle the PDF upload and print it
 app.post("/api/print", upload.single("pdf"), (req, res) => {
@@ -30,8 +42,10 @@ app.post("/api/print", upload.single("pdf"), (req, res) => {
 
   console.log(`Received PDF file at: ${pdfPath}`);
 
+  const printCommand = getPrintCommand(pdfPath);
+
   // Step 1: Use the lp command to print the PDF file
-  exec(`lp ${pdfPath}`, (error, stdout, stderr) => {
+  exec(printCommand, (error, stdout, stderr) => {
     if (error) {
       console.error(`Error while printing: ${error.message}`);
       return res
