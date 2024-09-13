@@ -1,67 +1,25 @@
 import React from "react";
-import OpenAI from "openai";
 import "./style/Board.css";
 
 // constants
 import { NUM_SQUARES, PatternContext } from "./App";
-import { openAIPrompt } from "./prompt";
-import { convertSvgToPng, uploadImageToImgur } from "./helpers";
+import { sendSvgForPrinting } from "./helpers";
 
 const NUM_STEPS = 10;
 
 const Board = ({ initialSquares = [], setUserPressedStart, setPattern }) => {
-  const openAIClient = new OpenAI({
-    apiKey: `${process.env.REACT_APP_OPENAI_API_KEY}`,
-    dangerouslyAllowBrowser: true,
-  });
-
   const [{ squares, step }, setSquares] = React.useState({
     squares: initialSquares,
     step: 0,
   });
 
   const patternFromContext = React.useContext(PatternContext);
-  const [generatingResponse, setGeneratingResponse] = React.useState(false);
-  const [response, setResponse] = React.useState(null);
+  //const [generatingResponse, setGeneratingResponse] = React.useState(false);
+  //const [response, setResponse] = React.useState(null);
 
-  //inspect the following svg picture: ${svgElement}. ${openAIPrompt}
-
-  const handleConvertToImg = () => {
+  const handlePrintSvg = () => {
     return (svgElement) => {
-      convertSvgToPng(svgElement).then((pngBlob) => {
-        const formData = new FormData();
-        formData.append("image", pngBlob);
-
-        uploadImageToImgur(pngBlob)
-          .then((imageUrl) => {
-            console.log("Image uploaded to Imgur:", imageUrl);
-          })
-          .catch((error) => {
-            console.error("Failed to upload image:", error);
-          });
-      });
-    };
-  };
-
-  const handleOpenAIResponse = () => {
-    return async (serializedSvg) => {
-      console.log(serializedSvg);
-
-      setGeneratingResponse(true);
-      try {
-        const chatCompletion = await openAIClient.chat.completions.create({
-          messages: [{ role: "user", content: "Say this is a test" }],
-          model: "text-embedding-3-small",
-        });
-        console.log({ chatCompletion });
-      } catch (error) {
-        console.error("Failed to generate response", error);
-      } finally {
-        setGeneratingResponse(false);
-        setResponse(
-          response?.data?.choices[0]?.text || "No response generated"
-        );
-      }
+      sendSvgForPrinting(svgElement);
     };
   };
 
@@ -177,8 +135,7 @@ const Board = ({ initialSquares = [], setUserPressedStart, setPattern }) => {
 
   const doVariation = React.useRef();
 
-  const askGPT = handleOpenAIResponse();
-  const convertToImg = handleConvertToImg();
+  const sendToPrinter = handlePrintSvg();
 
   const asyncEffect = async () => {
     if (step < NUM_STEPS) {
@@ -190,11 +147,9 @@ const Board = ({ initialSquares = [], setUserPressedStart, setPattern }) => {
     }
     if (step === NUM_STEPS && doVariation.current) {
       const svgElement = document.querySelector("svg") || null;
-      convertToImg(svgElement);
+      sendToPrinter(svgElement);
       setSquares((prev) => ({ ...prev, step: NUM_STEPS + 1 }));
       clearTimeout(doVariation.current);
-
-      //await askGPT(serializedSvg);
     }
   };
 
@@ -221,10 +176,7 @@ const Board = ({ initialSquares = [], setUserPressedStart, setPattern }) => {
           {squares}
         </svg>
       </div>
-      <div>
-        {generatingResponse && <p>Generating response...</p>}
-        {response && !generatingResponse && <p>{response}</p>}
-      </div>
+      {step > NUM_STEPS && <div>{"some description about the result"}</div>}
     </div>
   );
 };
