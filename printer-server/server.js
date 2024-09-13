@@ -22,7 +22,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 function getPrintCommand(filePath) {
-  const printerName = "Your_Printer_Name"; // Change this to your actual printer name
+  const printerName = "SEWOO_SLK_Series"; // Change this to your actual printer name
 
   if (os.platform() === "win32") {
     // Windows OS
