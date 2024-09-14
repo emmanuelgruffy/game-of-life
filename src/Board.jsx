@@ -228,6 +228,7 @@ const Board = ({
       await handleDescription();
 
       setSquares((prev) => ({ ...prev, step: NUM_STEPS + 1 }));
+      clearTimeout(doVariation.current);
     }
   };
 

@@ -60,6 +60,19 @@ function App() {
 
   // ALL OF THIS IS FOR MOCK PURPOSES ///////////////////////////////////////////
 
+  // const insertNewSignal = () => {
+  //   console.log({ pattern });
+  //   if (pattern.length === 1000) {
+  //     //shrink array back to length of 6
+  //     setPattern((prev) => prev.slice(0, 6));
+  //   }
+
+  //   // create random signal between 50 and 100
+  //   const randomSignal = Math.floor(Math.random() * 50 + 50);
+
+  //   setPattern((prev) => [randomSignal, ...prev]);
+  // };
+
   // const patternFeed = React.useRef();
 
   // async function connectToSerialMock() {
@@ -289,6 +302,9 @@ function App() {
           </>
         )}
 
+        {/* <div style={{ position: "absolute", top: 0, left: 0 }}>
+          <button onClick={insertNewSignal}>NEW PATTERN</button>
+        </div> */}
         <button
           className="onboarding-button"
           autoFocus
