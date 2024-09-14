@@ -134,8 +134,11 @@ function App() {
           // Process each line separately
           lines.forEach((line) => {
             const signal = parseInt(line.slice(0, -1));
-            console.log({ signal });
-            setPattern((prev) => [signal, ...prev]);
+
+            if (signal > 0) {
+              console.log({ signal });
+              setPattern((prev) => [signal, ...prev]);
+            }
           });
         }
       }
