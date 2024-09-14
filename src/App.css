@@ -95,19 +95,14 @@
 }
 
 
-h1, h2,  h3, h4, h5, h6 {
+h1, h2,  h3, h4, h5, h6, .description {
   font-family: "Varela Round", sans-serif;
   color: whitesmoke;
   font-weight: 400;
   font-style: normal;
 }
 
-.intro-start {
-  font-size: x-large;
-  font-family: "Varela Round", sans-serif;
-  color: whitesmoke;
-  font-weight: 400;
-  font-style: normal;
+.onboarding-button {
   background: transparent;
   border: none;
 

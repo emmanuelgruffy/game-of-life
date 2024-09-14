@@ -63,3 +63,17 @@
     height: 762px; /* Adjusted board height for larger screens or landscape */
   }
 }
+
+.fade-in {
+  opacity: 0;
+  animation: fadeIn 2s forwards; /* Animate over 2 seconds */
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

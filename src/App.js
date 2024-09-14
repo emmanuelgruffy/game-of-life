@@ -2,7 +2,6 @@ import React from "react";
 import "./App.css";
 import Board from "./Board";
 import HeartSensorIcon from "../src/style/heart-senso-icon.svg";
-import ArrowCircleRightOutlinedIcon from "@mui/icons-material/ArrowCircleRightOutlined";
 
 class ReadlineParser {
   constructor(delimiter = "\n") {
@@ -39,12 +38,11 @@ export const NUM_SQUARES = 127;
 
 export const PatternContext = React.createContext(null);
 
-const ONBOARDING_STEPS = [
-  "onboarding-intro",
-  "onboarding-start-1",
-  "onboarding-start-2",
-  "onboarding-confirmation",
-  "onboarding-sensor-description",
+export const ONBOARDING_STEPS = [
+  "connect-to-serial",
+  "onboarding-intro-loop",
+  "onboarding-welcome",
+  "onboarding-touch-sensor",
 ];
 
 function App() {
@@ -52,12 +50,48 @@ function App() {
   const [isStreaming, setIsStreaming] = React.useState(false);
   const [userPressedStart, setUserPressedStart] = React.useState(false);
   const [onboardingSteps, setOnboardingSteps] = React.useState(
-    ONBOARDING_STEPS[0]
+    isStreaming ? ONBOARDING_STEPS[1] : ONBOARDING_STEPS[0]
   );
+  const [loader, setLoader] = React.useState(false);
 
   const isAppReady = pattern.length >= 6 && userPressedStart;
 
   console.log({ isStreaming });
+
+  // ALL OF THIS IS FOR MOCK PURPOSES ///////////////////////////////////////////
+
+  // const patternFeed = React.useRef();
+
+  // async function connectToSerialMock() {
+  //   setIsStreaming(true);
+
+  //   if (pattern.length === 1000) {
+  //     //shrink array back to length of 6
+  //     setPattern((prev) => prev.slice(0, 6));
+  //   }
+
+  //   if (onboardingSteps === "onboarding-touch-sensor") {
+  //     setUserPressedStart(true);
+
+  //     patternFeed.current = setTimeout(() => {
+  //       // create random signal between 50 and 100
+  //       const randomSignal = Math.floor(Math.random() * 50 + 50);
+
+  //       setPattern((prev) => [randomSignal, ...prev]);
+  //     }, 850);
+  //   }
+  // }
+
+  // React.useEffect(() => {
+  //   connectToSerialMock();
+  //   return () => {
+  //     if (pattern.length === 999) {
+  //       clearTimeout(patternFeed.current); // Clean up the timeout
+  //     }
+  //   };
+  // }, [pattern, onboardingSteps]);
+
+  // ALL OF THIS IS FOR MOCK PURPOSES ///////////////////////////////////////////
 
   async function connectToSerial() {
     setIsStreaming(true);
@@ -137,10 +171,11 @@ function App() {
   return (
     <PatternContext.Provider value={pattern}>
       <div className="App">
-        {!isStreaming && (
-          <div style={{ position: "absolute", top: 0, left: 0 }}>
+        {onboardingSteps === "connect-to-serial" && (
+          <div style={{ position: "absolute", top: "50%", left: "50%" }}>
             <button
               onClick={() => {
+                setOnboardingSteps(ONBOARDING_STEPS[1]);
                 connectToSerial();
               }}
             >
@@ -155,167 +190,124 @@ function App() {
               initialSquares={createInitialSquares()}
               setUserPressedStart={setUserPressedStart}
               setPattern={setPattern}
+              setOnboardingSteps={setOnboardingSteps}
             />
           </div>
         ) : (
           <>
-            {onboardingSteps === "onboarding-intro" && (
+            {onboardingSteps === "onboarding-intro-loop" && (
               <div style={{ position: "absolute" }}>
-                <h1 style={{ marginBottom: "0px" }}>
-                  This machine will design
-                </h1>
-                <h1 style={{ marginTop: "8px" }}>straight from your heart</h1>
+                <video
+                  autoPlay
+                  loop
+                  playsInline
+                  style={{
+                    width: "100vw",
+                    height: "100vh",
+                  }}
+                >
+                  <source
+                    src={`${process.env.PUBLIC_URL}/onboarding-videos/pulse-and-pattern.mp4`}
+                    type="video/mp4"
+                  />
+                  Your browser does not support the video tag.
+                </video>
               </div>
             )}
-            {onboardingSteps === "onboarding-start-1" && (
-              <div style={{ position: "absolute", textAlign: "left" }}>
-                <h1 style={{ marginBottom: "0px" }}>We will now start</h1>
-                <h1 style={{ marginTop: "8px" }}>a small journey</h1>
-                <br />
-                <h1 style={{ marginTop: "8px", marginBottom: "0px" }}>
-                  This app is a machine that
-                </h1>
-                <h1 style={{ marginTop: "8px", marginBottom: "0px" }}>
-                  joints biofeedback and code
-                </h1>
-                <h1 style={{ marginTop: "8px", marginBottom: "0px" }}>
-                  to create a unique pattern
-                </h1>
-                <h1 style={{ marginTop: "8px", marginBottom: "0px" }}>
-                  out of your pulse.
-                </h1>
-                <br />
-                <h1 style={{ marginTop: "8px", marginBottom: "0px" }}>
-                  The pattern you will get
-                </h1>
-                <h1 style={{ marginTop: "8px", marginBottom: "0px" }}>
-                  is not a medical graph.
-                </h1>
-                <h1 style={{ marginTop: "8px", marginBottom: "0px" }}>
-                  but it is unique to you
-                </h1>
-                <h1 style={{ marginTop: "8px", marginBottom: "0px" }}>
-                  and grows out of your
-                </h1>
-                <h1 style={{ marginTop: "8px", marginBottom: "0px" }}>
-                  heart's data at this
-                </h1>
-                <h1 style={{ marginTop: "8px", marginBottom: "0px" }}>
-                  specific moment in time.
-                </h1>
+            {onboardingSteps === "onboarding-welcome" && (
+              <div style={{ position: "absolute" }}>
+                <video
+                  autoPlay
+                  playsInline
+                  style={{
+                    width: "100vw",
+                    height: "100vh",
+                  }}
+                >
+                  <source
+                    src={`${process.env.PUBLIC_URL}/onboarding-videos/welcome.mp4`}
+                    type="video/mp4"
+                  />
+                  Your browser does not support the video tag.
+                </video>
               </div>
             )}
-            {onboardingSteps === "onboarding-start-2" && (
-              <div style={{ position: "absolute", textAlign: "left" }}>
-                <h1 style={{ marginBottom: "0px" }}>During the measurement</h1>
-                <h1 style={{ marginTop: "8px", marginBottom: "0px" }}>
-                  it is recommended to
-                </h1>
-                <h1 style={{ marginTop: "8px", marginBottom: "0px" }}>
-                  pay attention to
-                </h1>
-                <h1 style={{ marginTop: "8px", marginBottom: "0px" }}>
-                  your body so you could
-                </h1>
-                <h1 style={{ marginTop: "8px", marginBottom: "0px" }}>
-                  feel more connected
-                </h1>
-                <h1 style={{ marginTop: "8px", marginBottom: "0px" }}>
-                  to your real and metaphorical
-                </h1>
-                <h1 style={{ marginTop: "8px", marginBottom: "0px" }}>
-                  heart.
-                </h1>
-                <br />
-                <h1 style={{ marginTop: "8px", marginBottom: "0px" }}>
-                  When you'll print the pattern
-                </h1>
-                <h1 style={{ marginTop: "8px", marginBottom: "0px" }}>
-                  the machine will add an
-                </h1>
-                <h1 style={{ marginTop: "8px", marginBottom: "0px" }}>
-                  interpretation of what your
-                </h1>
-                <h1 style={{ marginTop: "8px", marginBottom: "0px" }}>
-                  heart desires based
-                </h1>
-                <h1 style={{ marginTop: "8px", marginBottom: "0px" }}>
-                  on your unique pattern.
-                </h1>
-              </div>
-            )}
-            {onboardingSteps === "onboarding-confirmation" && (
-              <div style={{ position: "absolute", textAlign: "left" }}>
-                <h1 style={{ marginBottom: "0px" }}>
-                  Press enter if you are willing
-                </h1>
-                <h1 style={{ marginTop: "8px", marginBottom: "0px" }}>
-                  to start
-                </h1>
-              </div>
-            )}
-            {onboardingSteps === "onboarding-sensor-description" && (
-              <div style={{ position: "absolute", textAlign: "center" }}>
-                <h1 style={{ marginBottom: "0px" }}>
-                  Touch the sensor in green
-                </h1>
-                <h2 style={{ marginTop: "8px", marginBottom: "8px" }}>
-                  (it is right in front of you)
-                </h2>
-                <img
-                  src={HeartSensorIcon}
-                  alt="heart-sensor-icon"
-                  width={211}
-                  height={216}
-                />
-
-                <h1 style={{ marginTop: "8px", marginBottom: "0px" }}>
-                  Keep touching it for as long
-                </h1>
-                <br />
-                <h1 style={{ marginTop: "8px", marginBottom: "0px" }}>
-                  as pattern grows
-                </h1>
-                <h5 style={{ marginTop: "8px", marginBottom: "0px" }}>
-                  The measure will start in
-                </h5>
-                <h2 style={{ marginTop: "8px", marginBottom: "0px" }}>
-                  3..2..1..
-                </h2>
+            {onboardingSteps === "onboarding-touch-sensor" && (
+              <div style={{ position: "absolute" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                  }}
+                >
+                  <video
+                    onEnded={() => setLoader(true)}
+                    autoPlay
+                    playsInline // Ensures the video behaves well on mobile browsers
+                    style={{
+                      width: "100vw",
+                      height: "90vh",
+                    }}
+                  >
+                    <source
+                      src={`${process.env.PUBLIC_URL}/onboarding-videos/touch-sensor.mp4`}
+                      type="video/mp4"
+                    />
+                    Your browser does not support the video tag.
+                  </video>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      marginBottom: "15rem",
+                      width: "100vw",
+                      height: "10vh",
+                    }}
+                  >
+                    {loader && (
+                      <video
+                        autoPlay
+                        loop
+                        playsInline // Ensures the video behaves well on mobile browsers
+                        style={{
+                          width: "10vw",
+                          height: "10vh",
+                        }}
+                      >
+                        <source
+                          src={`${process.env.PUBLIC_URL}/onboarding-videos/loader.mp4`}
+                          type="video/mp4"
+                        />
+                        Your browser does not support the video tag.
+                      </video>
+                    )}
+                  </div>
+                </div>
               </div>
             )}
           </>
         )}
-        {onboardingSteps !== "onboarding-sensor-description" && (
-          <div className={`onboarding-div ${onboardingSteps}`}>
-            <button
-              className="intro-start"
-              autoFocus
-              onKeyDown={(e) => {
-                if (e.key === "Escape") {
-                  setOnboardingSteps(ONBOARDING_STEPS[0]);
-                }
-                if (e.key === "Enter") {
-                  if (onboardingSteps === "onboarding-confirmation") {
-                    setUserPressedStart(true);
-                  }
-                  setOnboardingSteps((prev) => {
-                    const currentIndex = ONBOARDING_STEPS.indexOf(prev);
-                    return ONBOARDING_STEPS[currentIndex + 1];
-                  });
-                }
-              }}
-            >
-              {onboardingSteps === "onboarding-intro" ? (
-                "press enter to start"
-              ) : (
-                <ArrowCircleRightOutlinedIcon
-                  style={{ fontSize: "60px", fontWeight: 400 }}
-                />
-              )}
-            </button>
-          </div>
-        )}
+
+        <button
+          className="onboarding-button"
+          autoFocus
+          onKeyDown={(e) => {
+            if (e.key === "Escape") {
+              setOnboardingSteps(ONBOARDING_STEPS[0]);
+            }
+            if (e.key === "Enter") {
+              if (onboardingSteps === "onboarding-touch-sensor") {
+                setUserPressedStart(true);
+              } else {
+                setOnboardingSteps((prev) => {
+                  const currentIndex = ONBOARDING_STEPS.indexOf(prev);
+                  return ONBOARDING_STEPS[currentIndex + 1];
+                });
+              }
+            }
+          }}
+        />
       </div>
     </PatternContext.Provider>
   );

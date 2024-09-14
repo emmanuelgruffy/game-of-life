@@ -3,24 +3,68 @@ import "./style/Board.css";
 
 // constants
 import { NUM_SQUARES, PatternContext } from "./App";
-import { sendSvgForPrinting } from "./helpers";
+import { DESCRIPTIONS } from "./prompt";
+import { ONBOARDING_STEPS } from "./App";
 
-const NUM_STEPS = 10;
+const NUM_STEPS = 62;
 
-const Board = ({ initialSquares = [], setUserPressedStart, setPattern }) => {
+const VIDEOS_IN_CYCLE = [
+  "do-you-feel-your-pulse-2.mp4",
+  "is-it-fast-3.mp4",
+  "is-it-slow-4.mp4",
+  "do-you-have-any-intention-5.mp4",
+  "will-you-like-the-result-6.mp4",
+  "does-it-matter-7.mp4",
+  "you-are-done-8.mp4",
+  "loader-9.mp4",
+];
+
+const Board = ({
+  initialSquares = [],
+  setUserPressedStart,
+  setPattern,
+  setOnboardingSteps,
+}) => {
   const [{ squares, step }, setSquares] = React.useState({
     squares: initialSquares,
     step: 0,
   });
 
   const patternFromContext = React.useContext(PatternContext);
-  //const [generatingResponse, setGeneratingResponse] = React.useState(false);
-  //const [response, setResponse] = React.useState(null);
+  const [isPlayingVideo, setIsPlayingVideo] = React.useState(false);
+  const [inCycleVideo, setInCycleVideo] = React.useState(null);
+  const [description, setDescription] = React.useState(null);
 
-  const handlePrintSvg = () => {
-    return (svgElement) => {
-      sendSvgForPrinting(svgElement);
+  const hasPrinted = React.useRef(false);
+  const doVariation = React.useRef();
+
+  const handlePrinterDialog = () => {
+    window.print();
+  };
+
+  const handlePrinting = () => {
+    return async () => {
+      hasPrinted.current = true;
+      handlePrinterDialog();
     };
+  };
+
+  const handleLoaderVideo = () => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        setIsPlayingVideo(false);
+        setInCycleVideo(null);
+        resolve();
+      }, 3000);
+    });
+  };
+
+  const handleDescription = () => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve();
+      }, 500);
+    });
   };
 
   const translatePatternToVariation = (pattern) => {
@@ -118,24 +162,55 @@ const Board = ({ initialSquares = [], setUserPressedStart, setPattern }) => {
 
           newSquares[row][col] = (
             <rect
+              key={`${row}-${col}-${step}`}
               x={col * 5}
               y={row * 5}
               width={5}
               height={5}
               fill={blackOrWhite === "W" ? "white" : "black"}
-              className={blackOrWhite === "W" ? "W" : "B"}
+              className={`${blackOrWhite === "W" ? "W" : "B"} fade-in`}
             ></rect>
           );
         }
       }
-      setSquares((prev) => ({ squares: newSquares, step: prev.step + 1 }));
+
+      if (step >= 8 && step < 10) {
+        setInCycleVideo(VIDEOS_IN_CYCLE[0]);
+        !isPlayingVideo && setIsPlayingVideo(true);
+      }
+      if (step >= 16 && step < 18) {
+        setInCycleVideo(VIDEOS_IN_CYCLE[1]);
+        !isPlayingVideo && setIsPlayingVideo(true);
+      }
+      if (step >= 24 && step < 26) {
+        setInCycleVideo(VIDEOS_IN_CYCLE[2]);
+        !isPlayingVideo && setIsPlayingVideo(true);
+      }
+      if (step >= 32 && step < 34) {
+        setInCycleVideo(VIDEOS_IN_CYCLE[3]);
+        !isPlayingVideo && setIsPlayingVideo(true);
+      }
+      if (step >= 40 && step < 42) {
+        setInCycleVideo(VIDEOS_IN_CYCLE[4]);
+        !isPlayingVideo && setIsPlayingVideo(true);
+      }
+      if (step >= 48 && step < 50) {
+        setInCycleVideo(VIDEOS_IN_CYCLE[5]);
+        !isPlayingVideo && setIsPlayingVideo(true);
+      }
+      if (step >= NUM_STEPS - 1 && step < NUM_STEPS) {
+        setInCycleVideo(VIDEOS_IN_CYCLE[6]);
+        !isPlayingVideo && setIsPlayingVideo(true);
+      }
+
+      if (step < NUM_STEPS) {
+        setSquares((prev) => ({ squares: newSquares, step: prev.step + 1 }));
+      }
     },
     [calcNumberOfWhites]
   );
 
-  const doVariation = React.useRef();
-
-  const sendToPrinter = handlePrintSvg();
+  const setPrinting = handlePrinting();
 
   const asyncEffect = async () => {
     if (step < NUM_STEPS) {
@@ -146,10 +221,13 @@ const Board = ({ initialSquares = [], setUserPressedStart, setPattern }) => {
       }, 1000 * (1 / patternFromContext[0]));
     }
     if (step === NUM_STEPS && doVariation.current) {
-      const svgElement = document.querySelector("svg") || null;
-      sendToPrinter(svgElement);
+      setInCycleVideo(VIDEOS_IN_CYCLE[7]);
+      setIsPlayingVideo(true);
+      await handleLoaderVideo();
+      setDescription(DESCRIPTIONS[0]);
+      await handleDescription();
+
       setSquares((prev) => ({ ...prev, step: NUM_STEPS + 1 }));
-      clearTimeout(doVariation.current);
     }
   };
 
@@ -158,6 +236,13 @@ const Board = ({ initialSquares = [], setUserPressedStart, setPattern }) => {
     return () => {
       if (step > NUM_STEPS && doVariation.current) {
         clearTimeout(doVariation.current); // Clean up the timeout
+        if (!hasPrinted.current) {
+          setPrinting();
+        }
+        setSquares((prev) => ({ ...prev, step: 0 }));
+        setUserPressedStart(false);
+        setPattern([]);
+        setOnboardingSteps(ONBOARDING_STEPS[1]);
       }
     };
   }, [patternFromContext]);
@@ -172,11 +257,49 @@ const Board = ({ initialSquares = [], setUserPressedStart, setPattern }) => {
       }}
     >
       <div className="board">
-        <svg width={127 * 5} height={127 * 5}>
+        <svg width={127 * 5} height={127 * 5} className="fade-in">
           {squares}
         </svg>
       </div>
-      {step > NUM_STEPS && <div>{"some description about the result"}</div>}
+      <div
+        style={{
+          marginTop: "5rem",
+          display: "flex",
+          justifyContent: "center",
+          width: "100vw",
+          height: "5vh",
+        }}
+      >
+        {inCycleVideo && isPlayingVideo && (
+          <video
+            autoPlay
+            onEnded={() => setIsPlayingVideo(false)}
+            playsInline
+            style={{
+              width: "100vw",
+              height: "5vh",
+            }}
+          >
+            <source
+              src={`${process.env.PUBLIC_URL}/cycle-videos/${inCycleVideo}`}
+              type="video/mp4"
+            />
+            Your browser does not support the video tag.
+          </video>
+        )}
+        {description && !isPlayingVideo && (
+          <div className="description fade-in">
+            <div>
+              <strong>description:</strong>
+              <span>{description.description}</span>
+            </div>
+            <div>
+              <strong>what your heart wants:</strong>
+              <span>{description.heart}</span>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
