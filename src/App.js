@@ -57,6 +57,7 @@ function App() {
   const isAppReady = pattern.length >= 6 && userPressedStart;
 
   console.log({ isStreaming });
+  console.log({ isAppReady });
 
   // ALL OF THIS IS FOR MOCK PURPOSES ///////////////////////////////////////////
 
@@ -83,16 +84,12 @@ function App() {
   //     setPattern((prev) => prev.slice(0, 6));
   //   }
 
-  //   if (onboardingSteps === "onboarding-touch-sensor") {
-  //     setUserPressedStart(true);
+  //   patternFeed.current = setTimeout(() => {
+  //     // create random signal between 50 and 100
+  //     const randomSignal = Math.floor(Math.random() * 50 + 50);
 
-  //     patternFeed.current = setTimeout(() => {
-  //       // create random signal between 50 and 100
-  //       const randomSignal = Math.floor(Math.random() * 50 + 50);
-
-  //       setPattern((prev) => [randomSignal, ...prev]);
-  //     }, 850);
-  //   }
+  //     setPattern((prev) => [randomSignal, ...prev]);
+  //   }, 850);
   // }
 
   // React.useEffect(() => {
@@ -316,7 +313,7 @@ function App() {
               setOnboardingSteps(ONBOARDING_STEPS[0]);
             }
             if (e.key === "Enter") {
-              if (onboardingSteps === "onboarding-touch-sensor") {
+              if (onboardingSteps === "onboarding-welcome") {
                 setUserPressedStart(true);
               } else {
                 setOnboardingSteps((prev) => {
