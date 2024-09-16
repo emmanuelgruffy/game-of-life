@@ -315,11 +315,17 @@ function App() {
             if (e.key === "Enter") {
               if (onboardingSteps === "onboarding-welcome") {
                 setUserPressedStart(true);
-              } else {
                 setOnboardingSteps((prev) => {
                   const currentIndex = ONBOARDING_STEPS.indexOf(prev);
                   return ONBOARDING_STEPS[currentIndex + 1];
                 });
+              } else {
+                if (onboardingSteps !== "onboarding-touch-sensor") {
+                  setOnboardingSteps((prev) => {
+                    const currentIndex = ONBOARDING_STEPS.indexOf(prev);
+                    return ONBOARDING_STEPS[currentIndex + 1];
+                  });
+                }
               }
             }
           }}
