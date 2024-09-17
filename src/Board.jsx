@@ -13,8 +13,6 @@ const VIDEOS_IN_CYCLE = [
   "is-it-fast-3.mp4",
   "is-it-slow-4.mp4",
   "do-you-have-any-intention-5.mp4",
-  "will-you-like-the-result-6.mp4",
-  "does-it-matter-7.mp4",
   "you-are-done-8.mp4",
   "loader-9.mp4",
 ];
@@ -162,44 +160,37 @@ const Board = ({
 
           newSquares[row][col] = (
             <rect
-              key={`${row}-${col}-${step}`}
               x={col * 5}
               y={row * 5}
               width={5}
               height={5}
               fill={blackOrWhite === "W" ? "white" : "black"}
-              className={`${blackOrWhite === "W" ? "W" : "B"} fade-in`}
+              className={`${blackOrWhite === "W" ? "W" : "B"}`}
             ></rect>
           );
         }
       }
 
-      if (step >= 8 && step < 10) {
+      if (step >= 8 && step < 12) {
         setInCycleVideo(VIDEOS_IN_CYCLE[0]);
         !isPlayingVideo && setIsPlayingVideo(true);
       }
-      if (step >= 16 && step < 18) {
+
+      if (step >= 20 && step < 24) {
         setInCycleVideo(VIDEOS_IN_CYCLE[1]);
         !isPlayingVideo && setIsPlayingVideo(true);
       }
-      if (step >= 24 && step < 26) {
+
+      if (step >= 32 && step < 36) {
         setInCycleVideo(VIDEOS_IN_CYCLE[2]);
         !isPlayingVideo && setIsPlayingVideo(true);
       }
-      if (step >= 32 && step < 34) {
+      if (step >= 44 && step < 48) {
         setInCycleVideo(VIDEOS_IN_CYCLE[3]);
         !isPlayingVideo && setIsPlayingVideo(true);
       }
-      if (step >= 40 && step < 42) {
-        setInCycleVideo(VIDEOS_IN_CYCLE[4]);
-        !isPlayingVideo && setIsPlayingVideo(true);
-      }
-      if (step >= 48 && step < 50) {
-        setInCycleVideo(VIDEOS_IN_CYCLE[5]);
-        !isPlayingVideo && setIsPlayingVideo(true);
-      }
       if (step >= NUM_STEPS - 1 && step < NUM_STEPS) {
-        setInCycleVideo(VIDEOS_IN_CYCLE[6]);
+        setInCycleVideo(VIDEOS_IN_CYCLE[4]);
         !isPlayingVideo && setIsPlayingVideo(true);
       }
 
@@ -220,8 +211,9 @@ const Board = ({
         createNextVariationSquares(variation);
       }, 1000 * (1 / patternFromContext[0]));
     }
+
     if (step === NUM_STEPS && doVariation.current) {
-      setInCycleVideo(VIDEOS_IN_CYCLE[7]);
+      setInCycleVideo(VIDEOS_IN_CYCLE[5]);
       setIsPlayingVideo(true);
       await handleLoaderVideo();
       setDescription(DESCRIPTIONS[0]);
@@ -258,7 +250,7 @@ const Board = ({
       }}
     >
       <div className="board">
-        <svg width={127 * 5} height={127 * 5} className="fade-in">
+        <svg width={127 * 5} height={127 * 5}>
           {squares}
         </svg>
       </div>
@@ -291,12 +283,16 @@ const Board = ({
         {description && !isPlayingVideo && (
           <div className="description fade-in">
             <div>
-              <strong>description:</strong>
-              <span>{description.description}</span>
+              <h3>
+                <strong>description: </strong>
+                <span>{description.description}</span>
+              </h3>
             </div>
             <div>
-              <strong>what your heart wants:</strong>
-              <span>{description.heart}</span>
+              <h3>
+                <strong>what your heart wants: </strong>
+                <span>{description.heart}</span>
+              </h3>
             </div>
           </div>
         )}

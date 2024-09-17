@@ -255,7 +255,9 @@ function App() {
                   }}
                 >
                   <video
-                    onEnded={() => setLoader(true)}
+                    onEnded={() => {
+                      setUserPressedStart(true);
+                    }}
                     autoPlay
                     playsInline // Ensures the video behaves well on mobile browsers
                     style={{
@@ -312,21 +314,14 @@ function App() {
             if (e.key === "Escape") {
               setOnboardingSteps(ONBOARDING_STEPS[0]);
             }
-            if (e.key === "Enter") {
-              if (onboardingSteps === "onboarding-welcome") {
-                setUserPressedStart(true);
-                setOnboardingSteps((prev) => {
-                  const currentIndex = ONBOARDING_STEPS.indexOf(prev);
-                  return ONBOARDING_STEPS[currentIndex + 1];
-                });
-              } else {
-                if (onboardingSteps !== "onboarding-touch-sensor") {
-                  setOnboardingSteps((prev) => {
-                    const currentIndex = ONBOARDING_STEPS.indexOf(prev);
-                    return ONBOARDING_STEPS[currentIndex + 1];
-                  });
-                }
-              }
+            if (
+              e.key === "Enter" &&
+              onboardingSteps !== "onboarding-touch-sensor"
+            ) {
+              setOnboardingSteps((prev) => {
+                const currentIndex = ONBOARDING_STEPS.indexOf(prev);
+                return ONBOARDING_STEPS[currentIndex + 1];
+              });
             }
           }}
         />
