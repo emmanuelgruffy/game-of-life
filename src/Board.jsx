@@ -292,16 +292,16 @@ const Board = ({
         {description && !isPlayingVideo && (
           <div className="description fade-in">
             <div>
-              <h3>
+              <h1>
                 <strong>description: </strong>
                 <span>{description.description}</span>
-              </h3>
+              </h1>
             </div>
             <div>
-              <h3>
+              <h1>
                 <strong>what your heart wants: </strong>
                 <span>{description.heart}</span>
-              </h3>
+              </h1>
             </div>
           </div>
         )}
