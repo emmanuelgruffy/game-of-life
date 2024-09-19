@@ -1,8 +1,6 @@
 import React from "react";
 import "./App.css";
 import Board from "./Board";
-import HeartSensorIcon from "../src/style/heart-senso-icon.svg";
-
 class ReadlineParser {
   constructor(delimiter = "\n") {
     this.delimiter = delimiter;
@@ -52,7 +50,6 @@ function App() {
   const [onboardingSteps, setOnboardingSteps] = React.useState(
     isStreaming ? ONBOARDING_STEPS[1] : ONBOARDING_STEPS[0]
   );
-  const [loader, setLoader] = React.useState(false);
 
   const isAppReady = pattern.length >= 6 && userPressedStart;
 
@@ -61,18 +58,18 @@ function App() {
 
   // ALL OF THIS IS FOR MOCK PURPOSES ///////////////////////////////////////////
 
-  const insertNewSignal = () => {
-    console.log({ pattern });
-    if (pattern.length === 1000) {
-      //shrink array back to length of 6
-      setPattern((prev) => prev.slice(0, 6));
-    }
+  // const insertNewSignal = () => {
+  //   console.log({ pattern });
+  //   if (pattern.length === 1000) {
+  //     //shrink array back to length of 6
+  //     setPattern((prev) => prev.slice(0, 6));
+  //   }
 
-    // create random signal between 50 and 100
-    const randomSignal = Math.floor(Math.random() * 50 + 50);
+  //   // create random signal between 50 and 100
+  //   const randomSignal = Math.floor(Math.random() * 50 + 50);
 
-    setPattern((prev) => [randomSignal, ...prev]);
-  };
+  //   setPattern((prev) => [randomSignal, ...prev]);
+  // };
 
   const patternFeed = React.useRef();
 
@@ -270,33 +267,6 @@ function App() {
                     />
                     Your browser does not support the video tag.
                   </video>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      marginBottom: "15rem",
-                      width: "100vw",
-                      height: "10vh",
-                    }}
-                  >
-                    {loader && (
-                      <video
-                        autoPlay
-                        loop
-                        playsInline // Ensures the video behaves well on mobile browsers
-                        style={{
-                          width: "10vw",
-                          height: "10vh",
-                        }}
-                      >
-                        <source
-                          src={`${process.env.PUBLIC_URL}/onboarding-videos/loader.mp4`}
-                          type="video/mp4"
-                        />
-                        Your browser does not support the video tag.
-                      </video>
-                    )}
-                  </div>
                 </div>
               </div>
             )}
