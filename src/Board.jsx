@@ -34,7 +34,7 @@ const Board = ({
   const [description, setDescription] = React.useState(null);
 
   const hasPrinted = React.useRef(false);
-  //const doVariation = React.useRef();
+  const doVariation = React.useRef();
 
   const handlePrinterDialog = () => {
     window.print();
@@ -210,13 +210,12 @@ const Board = ({
 
       createNextVariationSquares(variation);
 
-      // doVariation.current = setTimeout(() => {
-      //   createNextVariationSquares(variation);
-      // }, 1000 * (1 / patternFromContext[0]));
+      doVariation.current = setTimeout(() => {
+        createNextVariationSquares(variation);
+      }, 1000 * (1 / patternFromContext[0]));
     }
 
-    if (step === NUM_STEPS) {
-      //step === NUM_STEPS && doVariation.current
+    if (step === NUM_STEPS && doVariation.current) {
       setInCycleVideo(VIDEOS_IN_CYCLE[5]);
       setIsPlayingVideo(true);
       await handleLoaderVideo();
@@ -228,16 +227,15 @@ const Board = ({
       await handleDescription();
 
       setSquares((prev) => ({ ...prev, step: NUM_STEPS + 1 }));
-      // clearTimeout(doVariation.current);
+      clearTimeout(doVariation.current);
     }
   };
 
   React.useEffect(() => {
     asyncEffect();
     return () => {
-      if (step > NUM_STEPS) {
-        // step > NUM_STEPS && doVariation.current
-        // clearTimeout(doVariation.current); // Clean up the timeout
+      if (step > NUM_STEPS && doVariation.current) {
+        clearTimeout(doVariation.current); // Clean up the timeout
         if (!hasPrinted.current) {
           setPrinting();
         }

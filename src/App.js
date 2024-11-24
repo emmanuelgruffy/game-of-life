@@ -53,8 +53,9 @@ function App() {
 
   const isAppReady = pattern.length >= 6 && userPressedStart;
 
-  console.log({ isStreaming });
-  console.log({ isAppReady });
+  // console.log({ isStreaming });
+  // console.log({ isAppReady });
+  console.log({ pattern });
 
   // ALL OF THIS IS FOR MOCK PURPOSES ///////////////////////////////////////////
 
@@ -71,35 +72,35 @@ function App() {
   //   setPattern((prev) => [randomSignal, ...prev]);
   // };
 
-  const patternFeed = React.useRef();
+  // const patternFeed = React.useRef();
 
-  async function connectToSerialMock() {
-    if (pattern.length > 100) {
-      //shrink array back to length of 6
-      setPattern((prev) => prev.slice(0, 6));
-    }
+  // async function connectToSerialMock() {
+  //   if (pattern.length > 100) {
+  //     //shrink array back to length of 6
+  //     setPattern((prev) => prev.slice(0, 6));
+  //   }
 
-    console.log({ pattern });
+  //   console.log({ pattern });
 
-    patternFeed.current = setTimeout(() => {
-      // create random signal between 50 and 100
-      const randomSignal = Math.floor(Math.random() * 50 + 50);
+  //   patternFeed.current = setTimeout(() => {
+  //     // create random signal between 50 and 100
+  //     const randomSignal = Math.floor(Math.random() * 50 + 50);
 
-      setPattern((prev) => [randomSignal, ...prev]);
-    }, 750);
-  }
+  //     setPattern((prev) => [randomSignal, ...prev]);
+  //   }, 750);
+  // }
 
-  React.useEffect(() => {
-    connectToSerialMock();
-    return () => {
-      clearTimeout(patternFeed.current); // Clean up the timeout
-    };
-  }, [pattern]);
+  // React.useEffect(() => {
+  //   connectToSerialMock();
+  //   return () => {
+  //     clearTimeout(patternFeed.current); // Clean up the timeout
+  //   };
+  // }, [pattern]);
 
   // ALL OF THIS IS FOR MOCK PURPOSES ///////////////////////////////////////////
 
   async function connectToSerial() {
-    setIsStreaming(true);
+    //setIsStreaming(true);
     try {
       // Request a port and open it
       const port = await navigator.serial.requestPort();
@@ -108,32 +109,32 @@ function App() {
       const reader = port.readable.getReader();
       const readlineParser = new ReadlineParser("\n"); // Using newline as the delimiter
 
-      // while (true) {
-      //   if (pattern.length === 1000) {
-      //     //shrink array back to length of 6
-      //     setPattern((prev) => prev.slice(0, 6));
-      //   }
-      //   const { value, done } = await reader.read();
-      //   if (done) {
-      //     reader.releaseLock();
-      //     break;
-      //   }
+      while (true) {
+        if (pattern.length === 1000) {
+          //shrink array back to length of 6
+          setPattern((prev) => prev.slice(0, 6));
+        }
+        const { value, done } = await reader.read();
+        if (done) {
+          reader.releaseLock();
+          break;
+        }
 
-      //   if (value) {
-      //     const text = new TextDecoder().decode(value);
-      //     const lines = readlineParser.parse(text);
+        if (value) {
+          const text = new TextDecoder().decode(value);
+          const lines = readlineParser.parse(text);
 
-      //     // Process each line separately
-      //     lines.forEach((line) => {
-      //       const signal = parseInt(line.slice(0, -1));
+          // Process each line separately
+          lines.forEach((line) => {
+            const signal = parseInt(line.slice(0, -1));
 
-      //       if (signal > 0) {
-      //         console.log({ signal });
-      //         setPattern((prev) => [signal, ...prev]);
-      //       }
-      //     });
-      //   }
-      // }
+            if (signal > 0) {
+              console.log({ signal });
+              setPattern((prev) => [signal, ...prev]);
+            }
+          });
+        }
+      }
 
       // If there's any remaining data in the buffer, process it
       const remaining = readlineParser.flush();
