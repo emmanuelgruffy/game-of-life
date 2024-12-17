@@ -293,14 +293,9 @@ const Board = ({
           <div className="description fade-in">
             <div>
               <h1>
-                <strong>description: </strong>
-                <span>{description.description}</span>
-              </h1>
-            </div>
-            <div>
-              <h1>
-                <strong>what your heart wants: </strong>
-                <span>{description.heart}</span>
+                <span>
+                  <strong>{description.description}</strong>
+                </span>
               </h1>
             </div>
           </div>
