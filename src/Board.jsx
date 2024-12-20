@@ -204,7 +204,6 @@ const Board = ({
   const setPrinting = handlePrinting();
 
   const asyncEffect = async () => {
-    console.log({ step });
     if (step < NUM_STEPS) {
       const variation = translatePatternToVariation(patternFromContext);
 
@@ -291,12 +290,40 @@ const Board = ({
         )}
         {description && !isPlayingVideo && (
           <div className="description fade-in">
-            <div>
-              <h1>
-                <span>
-                  <strong>{description.description}</strong>
-                </span>
-              </h1>
+            <div style={{ justifyContent: "flex", justifyContent: "center" }}>
+              <text
+                x="790"
+                y="20"
+                font-family="Arial"
+                font-size="16"
+                text-anchor="end"
+                direction="rtl"
+              >
+                <tspan x="790" dy="1.2em">
+                  {description.description.slice(
+                    0,
+                    description.description.length / 4
+                  )}
+                </tspan>
+                <tspan x="790" dy="1.2em">
+                  {description.description.slice(
+                    description.description.length / 4,
+                    (description.description.length / 4) * 2
+                  )}
+                </tspan>
+                <tspan x="790" dy="1.2em">
+                  {description.description.slice(
+                    (description.description.length / 4) * 2,
+                    (description.description.length / 4) * 3
+                  )}
+                </tspan>
+                <tspan x="790" dy="1.2em">
+                  {description.description.slice(
+                    (description.description.length / 4) * 3,
+                    description.description.length
+                  )}
+                </tspan>
+              </text>
             </div>
           </div>
         )}
