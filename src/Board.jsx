@@ -295,7 +295,8 @@ const Board = ({
                 x="790"
                 y="20"
                 font-family="Arial"
-                font-size="16"
+                font-size="20"
+                font-weight="bold"
                 text-anchor="end"
                 direction="rtl"
               >
