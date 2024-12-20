@@ -293,9 +293,10 @@ const Board = ({
             <div style={{ justifyContent: "flex", justifyContent: "center" }}>
               <text
                 x="790"
-                y="20"
+                y="50"
+                fill="black"
                 font-family="Arial"
-                font-size="20"
+                font-size="24"
                 font-weight="bold"
                 text-anchor="end"
                 direction="rtl"
